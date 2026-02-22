@@ -507,11 +507,21 @@ function module.open_simhid_g1000(args)
     if args.config.simhid_g1000_mock then
         return module.simhid_g1000_mock(args.config)
     else
-        return mapper.device{
-            name = "SimHID G1000",
-            type = "simhid",
-            identifier = args.config.simhid_g1000_identifier,
-            modifiers = args.modifiers,
+        if _G.cached_simhid_g1000_device == nil then
+            _G.cached_simhid_g1000_device = mapper.device{
+                name = "SimHID G1000",
+                type = "simhid",
+                identifier = args.config.simhid_g1000_identifier,
+                modifiers = args.modifiers,
+            }
+        end
+        return {
+            events = _G.cached_simhid_g1000_device.events,
+            get_events = function() return _G.cached_simhid_g1000_device:get_events() end,
+            upstream_ids = _G.cached_simhid_g1000_device.upstream_ids,
+            get_upstream_ids = function() return _G.cached_simhid_g1000_device:get_upstream_ids() end,
+            send = function(self, ...) return _G.cached_simhid_g1000_device:send(...) end,
+            close = function() end -- Intentionally empty to prevent disconnecting the physical hardware
         }
     end
 end

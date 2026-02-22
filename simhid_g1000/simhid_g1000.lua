@@ -18,7 +18,7 @@ local def_config = {
 local msfs_map = {}
 msfs_map["SR22 Asobo"] = g1000lib
 msfs_map["SR 22"] = g1000lib
-msfs_map["SR22T Working Title"] = require("msfs/g1000abs")
+msfs_map["SR22T"] = require("msfs/g1000abs")
 msfs_map["DA40-NG Asobo"] = g1000lib
 msfs_map["DA 40 NG"] = g1000lib
 msfs_map["DA62"] = g1000lib
@@ -59,6 +59,13 @@ msfs_map["Cessna Citation Longitude"] = require("msfs/longitude")
 msfs_map["Blackbird Simulations DHC-2"] = require("msfs/dhc2")
 msfs_map["Cessna 152"] = require("msfs/c152")
 
+msfs_map["Vision Jet"] = require("msfs/visionjet")
+msfs_map["visionjet_dual"] = require("msfs/visionjet_dual")
+msfs_map["pc24"] = require("msfs/pc24")
+msfs_map["C408 SkyCourier"] = require("msfs/c408")
+
+
+
 local msfs_fallback = def_config
 
 -- Configurations for DCS
@@ -77,7 +84,7 @@ end
 
 local function change(sim_type, aircraft)
     current.stop()
-    if sim_type == "msfs" then
+    if sim_type == "msfs" or sim_type == "fs2024" then
         current = msfs_map[aircraft]
         if not current then
             for name, mod in pairs(msfs_map) do
@@ -98,10 +105,29 @@ local function change(sim_type, aircraft)
     else
         current = def_config
     end
-    return current.start(global_config, aircraft)
+    local result = current.start(global_config, aircraft)
+    
+    -- Inject the reload hotkey onto EC5P if the device is available
+    if current.device and current.device.events and current.device.events.EC5P and mapper.reload_config then
+        if result.global_mappings == nil then
+            result.global_mappings = {}
+        end
+        result.global_mappings[#result.global_mappings + 1] = {
+            {event=current.device.events.EC5P.down, action=mapper.reload_config}
+        }
+    end
+    
+    return result
+end
+
+local function cleanup()
+    if current and current.stop then
+        current.stop()
+    end
 end
 
 return {
     init = init,
     change = change,
+    cleanup = cleanup,
 }
