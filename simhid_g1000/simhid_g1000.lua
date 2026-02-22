@@ -63,6 +63,7 @@ msfs_map["Vision Jet"] = require("msfs/visionjet")
 msfs_map["visionjet_dual"] = require("msfs/visionjet_dual")
 msfs_map["pc24"] = require("msfs/pc24")
 msfs_map["C408 SkyCourier"] = require("msfs/c408")
+msfs_map["King Air C90 GTX"] = require("msfs/kingairc90gtx")
 
 
 

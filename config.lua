@@ -59,6 +59,9 @@ local function normalize_msfs_aircraft_name(name)
         if string.find(name, "C408 SkyCourier") then
              return "C408 SkyCourier"
         end
+        if string.find(name, "King Air C90") then
+             return "King Air C90 GTX"
+        end
         if string.find(name, "G1000") then
              return "Cessna Skyhawk G1000"
         end
